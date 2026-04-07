@@ -38,6 +38,17 @@ try:
         env_name="ai_policy_engine",
     )
 
+    @app.get("/")
+    async def root():
+        return {
+            "name": "ai_policy_engine",
+            "version": "1.0.0",
+            "description": "A multi-objective, event-driven governance simulation environment for reinforcement learning agents.",
+            "status": "healthy",
+            "endpoints": ["/health", "/reset", "/step", "/state", "/schema", "/tasks"],
+            "tasks": ["environmental_recovery", "balanced_economy", "sustainable_governance", "sustainable_governance_extreme"],
+        }
+
 except ImportError:
     import copy
     from typing import Any, Dict, List, Optional
