@@ -92,17 +92,6 @@ except ImportError:
 
     # ── Endpoints ──
 
-    @app.get("/")
-    async def root():
-        return {
-            "name": "ai_policy_engine",
-            "version": "1.0.0",
-            "description": "A multi-objective, event-driven governance simulation environment for reinforcement learning agents.",
-            "status": "healthy",
-            "endpoints": ["/health", "/reset", "/step", "/state", "/schema", "/tasks"],
-            "tasks": ["environmental_recovery", "balanced_economy", "sustainable_governance", "sustainable_governance_extreme"],
-        }
-
     @app.get("/health")
     async def health():
         return HealthResponse(status="healthy")
@@ -165,22 +154,6 @@ except ImportError:
             for tid, cfg in TASK_CONFIGS.items()
         }
 
-# ------------------------------------------------------------------
-# Routes that MUST work regardless of which code path created `app`
-# (openenv create_app vs standalone FastAPI)
-# ------------------------------------------------------------------
-
-@app.get("/")
-async def root():
-    return {
-        "name": "ai_policy_engine",
-        "version": "1.0.0",
-        "description": "A multi-objective, event-driven governance simulation environment for reinforcement learning agents.",
-        "status": "healthy",
-        "endpoints": ["/health", "/reset", "/step", "/state", "/schema", "/tasks"],
-        "tasks": ["environmental_recovery", "balanced_economy", "sustainable_governance", "sustainable_governance_extreme"],
-    }
-
 
 def main():
     """Entry point for direct execution."""
@@ -191,4 +164,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
