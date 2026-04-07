@@ -165,6 +165,46 @@ except ImportError:
             for tid, cfg in TASK_CONFIGS.items()
         }
 
+# ------------------------------------------------------------------
+# Routes that MUST work regardless of which code path created `app`
+# (openenv create_app vs standalone FastAPI)
+# ------------------------------------------------------------------
+
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+
+
+class HeadMethodMiddleware(BaseHTTPMiddleware):
+    """Convert HEAD requests to GET so all endpoints support HEAD."""
+    async def dispatch(self, request: Request, call_next):
+        if request.method == "HEAD":
+            request._scope["method"] = "GET"
+            response = await call_next(request)
+            return Response(
+                content=b"",
+                status_code=response.status_code,
+                headers=dict(response.headers),
+            )
+        return await call_next(request)
+
+
+app.add_middleware(HeadMethodMiddleware)
+
+
+@app.get("/tasks")
+async def list_all_tasks():
+    from server.config import TASK_CONFIGS
+    return {
+        tid: {"description": cfg["description"], "max_steps": cfg["max_steps"]}
+        for tid, cfg in TASK_CONFIGS.items()
+    }
+
+
+@app.get("/logs")
+async def get_logs():
+    return {"logs": [], "message": "Logs are streamed to stdout via structured [START]/[STEP]/[END] format."}
+
 
 def main():
     """Entry point for direct execution."""
@@ -175,3 +215,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
